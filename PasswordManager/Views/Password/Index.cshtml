@@ -1,0 +1,91 @@
+﻿@model List<Entities.MyPassword>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Şifrelerim (@User.Identity.Name)</h2>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Kayıt Tanımı</th>
+                        <th scope="col">Url</th>
+                        <th scope="col">Kategori</th>
+                        <th scope="col">Kullanıcı Adı</th>
+                        <th scope="col">Şifre(Hashlenmiş Hali)</th>
+                        <th scope="col">Güncelle</th>
+                        <th scope="col">Sil</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Description</td>
+                            <td>@item.Url</td>
+                            <td>@item.Category.Name</td>
+                            <td>@item.UserName</td>
+                            <td>@item.Password</td>
+                            <td> <a class="btn btn-outline-success btn-sm" asp-action="UpdateMyPasswordDetail" asp-route-id="@item.Id">Güncelle</a></td>
+                            <td> <a class="btn btn-outline-danger btn-sm" title="Sil" onclick="confirmDelete(@item.Id)">Sil</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="float-start">
+                <a class="btn btn-primary btn-sm" asp-action="CreateMyPasswordDetail">Şifre Ekle</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: "Bu detayı silmek istiyor musunuz?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sil',
+                cancelButtonText: 'Vazgeç',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/Password/DeleteMyPasswordDetail?id=${id}`, { method: 'POST' })
+                        .then(response => response.text())
+                        .then(data => {
+                            Swal.fire({
+                                title: 'Silindi!',
+                                text: 'Şifre Detay silindi.',
+                                icon: 'success',
+                                showConfirmButton: false
+                            });
+
+                            setTimeout(function () {
+                                location.href = '/Password/Index';
+                            }, 2000);
+                        })
+                        .catch(error => {
+                            Swal.fire('Hata!', 'Silme sırasında bir hata meydana geldi.', 'error');
+                        });
+                }
+            });
+        }
+    </script>
+
+
+}
