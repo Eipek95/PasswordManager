@@ -31,6 +31,7 @@ namespace PasswordManager.Infrastructure.Extensions
             services.AddScoped<IServiceManager, ServiceManager>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IMyPasswordService, MyPasswordService>();
+            services.AddScoped<IIdentityUserService, IdentityUserService>();
 
         }
 

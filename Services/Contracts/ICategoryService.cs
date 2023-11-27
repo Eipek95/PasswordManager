@@ -9,6 +9,7 @@ namespace Services.Contracts
         Category GetOneCategoryById(int id, bool trackChanges);
         void CreateCategory(CreateCategoryViewModel category);
         void UpdateCategory(UpdateCategoryViewModel category);
-        void DeleteCategory(int id);
+        bool DeleteCategory(int id);
+        Task<List<Category>> GetAllCategoriesWithByIdentityUserName(string userName, bool trackChanges);
     }
 }

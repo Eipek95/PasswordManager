@@ -1,8 +1,6 @@
 ﻿using Core.ViewModels.CategoryViewModel;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Repositories.Models;
 using Services.Contracts;
 
 namespace PasswordManager.Controllers
@@ -11,26 +9,22 @@ namespace PasswordManager.Controllers
     public class CategoryController : Controller
     {
         private readonly IServiceManager _serviceManager;
-        private readonly UserManager<AppUser> _userManager;
-
-        public CategoryController(IServiceManager serviceManager, UserManager<AppUser> userManager)
+        private string userName => User.Identity!.Name!;
+        public CategoryController(IServiceManager serviceManager)
         {
             _serviceManager = serviceManager;
-            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
         {
-            var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
-            var mycategories = _serviceManager.CategoryService.GetAllCategory(false).Where(x => x.IdentityUserId == user!.Id).ToList();
-
+            var mycategories = await _serviceManager.CategoryService.GetAllCategoriesWithByIdentityUserName(userName, false);
             return View(mycategories);
         }
 
         public async Task<IActionResult> CreateCategory()
         {
-            var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
-            ViewBag.id = user!.Id;
+
+            ViewBag.id = await _serviceManager.IdentityUserService.GetIdentityUserIdrwithIdentityUserNameAsync(userName);
 
             return View();
         }
@@ -58,6 +52,12 @@ namespace PasswordManager.Controllers
         {
             _serviceManager.CategoryService.UpdateCategory(request);
             return RedirectToAction("Index", "Category");
+        }
+
+        public bool DeleteCategory(int id)
+        {
+            var result = _serviceManager.CategoryService.DeleteCategory(id);
+            return result;
         }
     }
 }

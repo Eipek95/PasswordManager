@@ -1,6 +1,8 @@
 ﻿using Core.ViewModels.CategoryViewModel;
 using Entities;
+using Microsoft.AspNetCore.Identity;
 using Repositories.Contracts;
+using Repositories.Models;
 using Services.Contracts;
 
 namespace Services
@@ -8,11 +10,12 @@ namespace Services
     public class CategoryService : ICategoryService
     {
         private readonly IRepositoryManager _repositoryManager;
+        private readonly UserManager<AppUser> _userManager;
 
-
-        public CategoryService(IRepositoryManager repositoryManager)
+        public CategoryService(IRepositoryManager repositoryManager, UserManager<AppUser> userManager)
         {
             _repositoryManager = repositoryManager;
+            _userManager = userManager;
         }
 
         public void CreateCategory(CreateCategoryViewModel category)
@@ -26,20 +29,32 @@ namespace Services
             _repositoryManager.Save();
         }
 
-        public void DeleteCategory(int id)
+        public bool DeleteCategory(int id)
         {
-            var result = _repositoryManager.CategoryRepository.FindAll(false).Where(x => x.Id == id).First();
-            if (result != null)
+            var result = _repositoryManager.MyPasswordRepository.FindAll(false).Where(x => x.CategoryId == id).Any();
+            if (!result)
             {
-                _repositoryManager.CategoryRepository.DeleteCategory(result);
+                var category = _repositoryManager.CategoryRepository.FindByCondition(x => x.Id == id, false);
+                _repositoryManager.CategoryRepository.DeleteCategory(category);
                 _repositoryManager.Save();
+
+                return true;
             }
+            return false;
+        }
+
+        public async Task<List<Category>> GetAllCategoriesWithByIdentityUserName(string userName, bool trackChanges)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            var categories = GetAllCategory(trackChanges).Where(x => x.IdentityUserId == user!.Id).ToList();
+            return categories;
         }
 
         public IEnumerable<Category> GetAllCategory(bool trackChanges)
         {
             return _repositoryManager.CategoryRepository.GetAllCategory(trackChanges);
         }
+
 
         public Category GetOneCategoryById(int id, bool trackChanges)
         {

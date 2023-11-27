@@ -1,6 +1,8 @@
 ﻿using Core.ViewModels.MyPasswordViewModel;
 using Entities;
+using Microsoft.AspNetCore.Identity;
 using Repositories.Contracts;
+using Repositories.Models;
 using Services.Contracts;
 using System.Security.Cryptography;
 
@@ -9,10 +11,12 @@ namespace Services
     public class MyPasswordService : IMyPasswordService
     {
         private readonly IRepositoryManager _repositoryManager;
+        private UserManager<AppUser> _userManager;
 
-        public MyPasswordService(IRepositoryManager repositoryManager)
+        public MyPasswordService(IRepositoryManager repositoryManager, UserManager<AppUser> userManager)
         {
             _repositoryManager = repositoryManager;
+            _userManager = userManager;
         }
 
         public void CreateMyPassword(CreateMyPasswordViewModel myPassword)
@@ -43,7 +47,7 @@ namespace Services
             }
         }
 
-        public IEnumerable<MyPassword> GetAllMyPasswordDto(bool trackChanges)
+        public IEnumerable<MyPassword> GetAllMyPassword(bool trackChanges)
         {
             return _repositoryManager.MyPasswordRepository.GetAllMyPassword(trackChanges);
         }
@@ -84,6 +88,13 @@ namespace Services
             _repositoryManager.Save();
         }
 
+        public async Task<List<MyPassword>> GetAllMyPasswordWithCategoryByIdentityUserNameAsync(string userName, bool trackChanges)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            var mypassword = GetAllMyPasswordWithByCategory(trackChanges).Where(x => x.IdentityUserId == user!.Id).ToList();
+            return mypassword;
+        }
+
 
         private static string HashPassword(string password, string salt)
         {
@@ -106,5 +117,7 @@ namespace Services
             }
             return Convert.ToBase64String(saltBytes);
         }
+
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿document.getElementById("generatePassword").addEventListener("change", function () {
     var passwordInput = document.getElementById("password");
     var passwordConfirmInput = document.getElementById("passwordConfirm");
+    var element = document.getElementById('passwordConfirm-error');
     if (this.checked) {
         var newPassword = generatePassword();
         passwordInput.value = newPassword;
