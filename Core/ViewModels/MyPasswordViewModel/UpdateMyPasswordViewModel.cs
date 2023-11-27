@@ -3,8 +3,26 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Core.ViewModels.MyPasswordViewModel
 {
+
     public class UpdateMyPasswordViewModel
     {
+        public UpdateMyPasswordViewModel()
+        {
+
+        }
+
+        public UpdateMyPasswordViewModel(int id, string identityUserId, string userName, string description, string url, int categoryId, string password, string passwordConfirm)
+        {
+            Id = id;
+            IdentityUserId = identityUserId;
+            UserName = userName;
+            Description = description;
+            Url = url;
+            CategoryId = categoryId;
+            Password = password;
+            PasswordConfirm = passwordConfirm;
+        }
+
         public int Id { get; set; }
         public string IdentityUserId { get; set; }
         [Required(ErrorMessage = "Kullanıcı Adı Boş Bırakılamaz")]

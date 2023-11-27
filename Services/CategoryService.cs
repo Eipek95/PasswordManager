@@ -20,6 +20,7 @@ namespace Services
             var result = new Category
             {
                 Name = category.Name,
+                IdentityUserId = category.IdentityUserId,
             };
             _repositoryManager.CategoryRepository.Create(result);
             _repositoryManager.Save();
@@ -51,6 +52,7 @@ namespace Services
             {
                 Id = category.Id,
                 Name = category.Name,
+                IdentityUserId = category.IdentityUserId,
             };
             _repositoryManager.CategoryRepository.Update(result);
             _repositoryManager.Save();

@@ -1,24 +1,19 @@
-﻿@model List<Entities.MyPassword>
+﻿@model List<Entities.Category>
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container">
     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
     </div>
     <div class="row">
-        <div class="col-md-12">
-            <h2>Şifrelerim (@User.Identity.Name)</h2>
+        <div class="col-md-6 offset-md-3">
+            <h2>Kategorilerim (@User.Identity!.Name)</h2>
 
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th scope="col">Kayıt Tanımı</th>
-                        <th scope="col">Url</th>
-                        <th scope="col">Kategori <a class="btn btn-outline-dark btn-sm mx-1" asp-action="CreateCategory" asp-controller="Category" title="Kategori Ekle"><i class="fas fa-plus"></i></a></th>
-                        <th scope="col">Kullanıcı Adı</th>
-                        <th scope="col">Şifre(Hashlenmiş Hali)</th>
+                        <th scope="col">Kategori Adı</th>
                         <th scope="col"></th>
                         <th scope="col"></th>
                     </tr>
@@ -28,19 +23,15 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@item.Description</td>
-                            <td>@item.Url</td>
-                            <td>@item.Category.Name</td>
-                            <td>@item.UserName</td>
-                            <td>@item.Password</td>
-                            <td> <a class="btn btn-outline-success btn-sm" asp-action="UpdateMyPasswordDetail" asp-route-id="@item.Id" title="Güncelle"><i class="far fa-edit"></i></a></td>
+                            <td>@item.Name</td>
+                            <td> <a class="btn btn-outline-success btn-sm" asp-action="UpdateCategory" asp-route-id="@item.Id" title="Güncelle"><i class="far fa-edit"></i></a></td>
                             <td> <a class="btn btn-outline-danger btn-sm" title="Sil" onclick="confirmDelete(@item.Id)"><i class="fas fa-trash-alt"></i></a></td>
                         </tr>
                     }
                 </tbody>
             </table>
             <div class="float-start">
-                <a class="btn btn-primary btn-sm" asp-action="CreateMyPasswordDetail">Şifre Ekle</a>
+                <a class="btn btn-primary btn-sm" asp-action="CreateCategory">Kategori Ekle</a>
             </div>
         </div>
     </div>
@@ -51,14 +42,14 @@
 
 
 @section Scripts{
-    
+  
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         function confirmDelete(id) {
             Swal.fire({
                 title: 'Emin misiniz?',
-                text: "Bu detayı silmek istiyor musunuz?",
+                text: "Bu kategoriyi silmek istiyor musunuz?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Sil',
@@ -66,7 +57,7 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    fetch(`/Password/DeleteMyPasswordDetail?id=${id}`, { method: 'POST' })
+                    fetch(`/Category/DeleteCategory?id=${id}`, { method: 'POST' })
                         .then(response => response.text())
                         .then(data => {
                             Swal.fire({

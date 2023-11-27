@@ -5,6 +5,20 @@ namespace Core.ViewModels.MyPasswordViewModel
 {
     public class CreateMyPasswordViewModel
     {
+        public CreateMyPasswordViewModel()
+        {
+
+        }
+        public CreateMyPasswordViewModel(string identityUserId, string userName, string description, string url, int categoryId, string password, string passwordConfirm)
+        {
+            IdentityUserId = identityUserId;
+            UserName = userName;
+            Description = description;
+            Url = url;
+            CategoryId = categoryId;
+            Password = password;
+            PasswordConfirm = passwordConfirm;
+        }
 
         public string IdentityUserId { get; set; }
         [Required(ErrorMessage = "Kullanıcı Adı Boş Bırakılamaz")]
