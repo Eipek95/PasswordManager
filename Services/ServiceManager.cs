@@ -6,18 +6,17 @@ namespace Services
     {
         private readonly ICategoryService _categoryService;
         private readonly IMyPasswordService _myPasswordService;
-        private readonly IIdentityUserService _identityUserService;
+        private readonly IAuthService _authService;
 
-        public ServiceManager(ICategoryService categoryService, IMyPasswordService myPasswordService, IIdentityUserService identityUserService)
+        public ServiceManager(ICategoryService categoryService, IMyPasswordService myPasswordService, IAuthService authService)
         {
             _categoryService = categoryService;
             _myPasswordService = myPasswordService;
-            _identityUserService = identityUserService;
+            _authService = authService;
         }
 
         public ICategoryService CategoryService => _categoryService;
         public IMyPasswordService MyPasswordService => _myPasswordService;
-
-        public IIdentityUserService IdentityUserService => _identityUserService;
+        public IAuthService AuthService => _authService;
     }
 }

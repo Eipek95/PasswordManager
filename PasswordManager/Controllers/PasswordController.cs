@@ -24,7 +24,7 @@ namespace PasswordManager.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateMyPasswordDetail()
         {
-            ViewBag.id = await _serviceManager.IdentityUserService.GetIdentityUserIdrwithIdentityUserNameAsync(userName);
+            ViewBag.id = await _serviceManager.AuthService.GetIdentityUserIdrwithIdentityUserNameAsync(userName);
             var categories = await _serviceManager.CategoryService.GetAllCategoriesWithByIdentityUserName(userName, false);
             ViewBag.categorySelectList = new SelectList(categories, "Id", "Name");
             return View();

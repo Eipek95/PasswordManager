@@ -36,7 +36,7 @@ function confirmDelete(id) {
                     else {
                         Swal.fire({
                             title: 'Hata!',
-                            text: 'Kategoriye ait şifre olduğu için silinemedi.',
+                            text: 'Kategoriye ait şifre olduğu için silinemedi.Lütfen önce ilgili şifreleri silin veya kategorisini değiştirin',
                             icon: 'error',
                             showConfirmButton: false
                         });

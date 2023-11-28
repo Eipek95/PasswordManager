@@ -24,9 +24,11 @@ namespace PasswordManager.Controllers
         public async Task<IActionResult> CreateCategory()
         {
 
-            ViewBag.id = await _serviceManager.IdentityUserService.GetIdentityUserIdrwithIdentityUserNameAsync(userName);
-
-            return View();
+            var category = new CreateCategoryViewModel
+            {
+                IdentityUserId = await _serviceManager.AuthService.GetIdentityUserIdrwithIdentityUserNameAsync(userName)
+            };
+            return View(category);
         }
         [HttpPost]
         public IActionResult CreateCategory(CreateCategoryViewModel request)

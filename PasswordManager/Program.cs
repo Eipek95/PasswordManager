@@ -15,7 +15,7 @@ builder.Services.ConfigureApplicationCookie(opt =>
     cookieBuilder.Name = "PasswordManagerCookie";
 
     opt.LoginPath = new PathString("/Home/SignIn");
-    opt.LogoutPath = new PathString("/Member/LogOut");
+    opt.LogoutPath = new PathString("/Home/LogOut");
     opt.Cookie = cookieBuilder;
     opt.ExpireTimeSpan = TimeSpan.FromDays(60);
     opt.SlidingExpiration = true;

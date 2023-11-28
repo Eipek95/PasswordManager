@@ -1,24 +1,23 @@
 using Core.ViewModels;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PasswordManager.Infrastructure.Extensions;
 using PasswordManager.Models;
-using Repositories.Models;
+using Services.Contracts;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace PasswordManager.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
+        private readonly IAuthService _authService;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public HomeController(ILogger<HomeController> logger, IAuthService authService)
         {
             _logger = logger;
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _authService = authService;
         }
 
         public IActionResult Index()
@@ -28,9 +27,13 @@ namespace PasswordManager.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> SignIn()
+        public IActionResult SignIn()
         {
-            if (_signInManager.IsSignedIn(User))
+
+            ClaimsPrincipal user = HttpContext.User;
+            var isUserSignedIn = _authService.IsUserSignedIn(user);
+
+            if (isUserSignedIn)
             {
                 return RedirectToAction("Index", "Password");
             }
@@ -43,20 +46,12 @@ namespace PasswordManager.Controllers
 
             returnUrl = returnUrl ?? Url.Action("Index", "Password");
 
-            var hasUser = await _userManager.FindByEmailAsync(request.Email);
-            if (hasUser == null)
-            {
-                ModelState.AddModelError(string.Empty, "Email veya Þifre Yanlýþ");
-                return View();
-            }
-
-            var signInResult = await _signInManager.PasswordSignInAsync(hasUser, request.Password, request.RememberMe, true);
+            var signInResult = await _authService.SignInAsync(request.Email, request.Password, request.RememberMe);
 
             if (signInResult.Succeeded)
             {
                 return Redirect(returnUrl);
             }
-
 
             if (signInResult.IsLockedOut)
             {
@@ -64,8 +59,9 @@ namespace PasswordManager.Controllers
                 return View();
             }
 
+            var accessFailedCount = await _authService.GetAccessFailedCountAsync(request.Email);
 
-            ModelState.AddModelErrorList(new List<string>() { "Email veya Þifre Yanlýþ", $"Baþarýsýz Giriþ Sayýsý= {await _userManager.GetAccessFailedCountAsync(hasUser)}" });
+            ModelState.AddModelErrorList(new List<string>() { "Email veya Þifre Yanlýþ", $"Baþarýsýz Giriþ Sayýsý= {accessFailedCount}" });
 
             return View();
         }
@@ -78,16 +74,12 @@ namespace PasswordManager.Controllers
         public async Task<IActionResult> SignUp(SignUpViewModel request)
         {
 
-            if (!ModelState.IsValid) return View();
-
-
-            var identityResult = await _userManager.CreateAsync(new()
+            if (!ModelState.IsValid)
             {
-                UserName = request.UserName,
-                Email = request.Email,
+                return View();
+            }
 
-            }, request.Password);
-
+            var identityResult = await _authService.RegisterUserAsync(request.UserName, request.Email, request.Password);
 
             if (identityResult.Succeeded)
             {
@@ -100,6 +92,13 @@ namespace PasswordManager.Controllers
 
         }
 
+
+        [Authorize]
+        [HttpGet]
+        public async Task LogOut()
+        {
+            await _authService.LogOut();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

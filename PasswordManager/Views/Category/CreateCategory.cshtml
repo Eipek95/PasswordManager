@@ -10,8 +10,7 @@
         <div class="col-md-6 offset-md-3">
             <form asp-action="CreateCategory" method="post">
                 <div class="mb-3">
-                    <label asp-for="IdentityUserId" class="form-label"></label>
-                    <input class="form-control" asp-for="IdentityUserId" value="@ViewBag.id">
+                    <input class="form-control" asp-for="IdentityUserId" type="hidden">
                 </div>
                 <div class="mb-3">
                     <label asp-for="Name" class="form-label"></label>
